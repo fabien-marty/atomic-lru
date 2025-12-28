@@ -1,0 +1,17 @@
+[importlinter]
+root_package = atomic_lru
+include_external_packages = True
+exclude_type_checking_imports = False
+
+[importlinter:contract:agents_embeddings]
+name = Use only exported symbols of atomic_lru._storage
+type = forbidden
+allow_indirect_imports = True
+source_modules = 
+   atomic_lru
+   atomic_lru.**
+forbidden_modules =
+   atomic_lru._storage.**
+ignore_imports =
+   atomic_lru._storage -> atomic_lru._storage.**
+   atomic_lru._storage.** -> atomic_lru._storage.**
