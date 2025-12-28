@@ -2,7 +2,7 @@
 
 ## What is this?
 
-This is a Python 3.12+ **thread-safe** and **dependency-free** library for storing data in a **in-memory** storage.
+This is a **thread-safe** and **dependency-free** **in-memory** **LRU storage** Python 3.12+ library with optional Time To Live (TTL).
 
 You can define:
 
@@ -20,9 +20,9 @@ The main use-case is to use it as a **cache** for your data. You store any kind 
 ```python
 from atomic_lru import CACHE_MISS, Cache
 
-# Create a Cache object instance
+# Create a Cache object instance (with a size limit of 1MB)
 # (this object is thread-safe, so you can use it from multiple threads)
-cache = Cache(max_items=100, default_ttl=3600)
+cache = Cache(size_limit_in_bytes=1_000_000, default_ttl=3600)
 
 # Let's store something (a dictionnary here) in the cache with a custom TTL
 cache.set("user:123", {"name": "Alice", "age": 30}, ttl=60)
