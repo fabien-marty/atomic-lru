@@ -52,11 +52,11 @@ class Value[T]:
         `time.perf_counter()`. If TTL is None, sets expiration to None.
         """
         if self.ttl is None:
-            super().__setattr__("_expire_at", None)
+            object.__setattr__(self, "_expire_at", None)
         else:
             if self.ttl < 0:
                 raise ValueError("TTL cannot be negative")
-            super().__setattr__("_expire_at", time.perf_counter() + self.ttl)
+            object.__setattr__(self, "_expire_at", time.perf_counter() + self.ttl)
 
     @property
     def is_expired(self) -> bool:
