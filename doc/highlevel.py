@@ -1,8 +1,8 @@
 from atomic_lru import CACHE_MISS, Cache
 
-# Create a Cache object instance
+# Create a Cache object instance (with a size limit of 1MB)
 # (this object is thread-safe, so you can use it from multiple threads)
-cache = Cache(max_items=100, default_ttl=3600)
+cache = Cache(size_limit_in_bytes=1_000_000, default_ttl=3600)
 
 # Let's store something (a dictionnary here) in the cache with a custom TTL
 cache.set("user:123", {"name": "Alice", "age": 30}, ttl=60)

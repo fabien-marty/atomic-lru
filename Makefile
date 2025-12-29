@@ -33,6 +33,7 @@ endif
 clean: ## Clean the repository
 	rm -Rf .venv .*_cache build dist htmlcov .coverage
 	find . -type d -name __pycache__ -exec rm -Rf {} \; 2>/dev/null || true
+	find . -type d -name .ruff_cache -exec rm -Rf {} \; 2>/dev/null || true
 
 .PHONY: doc
 doc: ## Generate the documentation
