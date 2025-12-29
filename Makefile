@@ -48,6 +48,13 @@ _set-version:
 build: _set-version ## Build the package
 	$(UV) build
 
+.PHONY: publish
+publish: build ## Publish the package to PyPI
+ifeq ($(UV_PUBLISH_TOKEN),)
+	@echo "ERROR: UV_PUBLISH_TOKEN is not set" && exit 1
+endif
+	$(UV) publish
+
 .PHONY: no-dirty
 no-dirty: ## Check that the repository is clean
 	if test -n "$$(git status --porcelain)"; then \
