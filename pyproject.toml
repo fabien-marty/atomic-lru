@@ -1,11 +1,17 @@
 [project]
 name = "atomic_lru"
 version = "0.0.1"
-description = "Thread safe in-memory LRU cache (with TTL)"
+description = "Thread-safe, dependency-free in-memory LRU storage library for Python 3.12+ (with optional TTL)"
 readme = "README.md"
 requires-python = ">=3.12"
-
+authors = [{ name = "Fabien MARTY", email = "fabien.marty@gmail.com" }]
+maintainers = [{ name = "Fabien MARTY", email = "fab@fabien-marty.dev" }]
+license = "MIT"
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/fabien-marty/atomic-lru"
+Repository = "https://github.com/fabien-marty/atomic-lru.git"
 
 [tool.uv]
 required-version = ">=0.9.0"
