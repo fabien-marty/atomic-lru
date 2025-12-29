@@ -46,12 +46,12 @@ But you can use it at a lower level to store any kind of data type without seria
 
 - Thread-Safe
 - (optional) TTL expiration *(globally or per item)*
-- (optional) Total size limit (in bytes) [^2]
+- (optional) Total size limit *(in bytes)* [^2]
 - (optional) Max items limit
 - Automatic LRU eviction *(when the limits are reached)*
 - Full-typing support
-- High level `Cache` API with automatic serialization/deserialization
-- Low level `Storage` API without serialization/deserialization
+- High level `Cache` API **with** automatic serialization/deserialization [^1]
+- Low level `Storage` API **without** serialization/deserialization *(store only references to given objects)*
 
 ### Low level API example
 
@@ -87,3 +87,12 @@ if obj is not CACHE_MISS:
 
 [^1]: By default, `pickle` is used for serialization/deserialization but you can provide your own serializer/deserializer if you want to use a different format.
 [^2]: This feature is only available when using the high level `Cache` API.
+
+## DEV
+
+This library is managed with `uv` and a `Makefile`. Execute:
+
+- `uv sync` to create the virtual environment
+- `make lint` to lint the code (style, checks, types, architecture) and fix obvious things
+- `make test` to execute unit tests
+- `make doc` to generate the documentation

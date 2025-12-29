@@ -243,3 +243,58 @@ def test_max_size_limit():
     assert storage.number_of_items > 10
     assert storage.size_in_bytes > 3500
     assert storage.size_in_bytes < 4096
+
+
+def test_overwrite_existing_key_size_tracking():
+    """Test that overwriting an existing key correctly updates size tracking."""
+    storage = Storage[bytes](
+        size_limit_in_bytes=4096,
+        max_items=100,
+        expiration_thread_max_checks_per_iteration=0,
+    )
+    initial_size = storage.size_in_bytes
+
+    # Set a key with a small value
+    small_value = b"small"
+    storage.set("key1", small_value)
+    size_after_small = storage.size_in_bytes
+    expected_size_after_small = (
+        initial_size
+        + OBJECT_SIZE_APPROXIMATE_SIZE
+        + len(small_value)
+        + PER_ITEM_APPROXIMATE_SIZE
+    )
+    assert size_after_small == expected_size_after_small
+
+    # Overwrite the same key with a larger value
+    large_value = b"x" * 100
+    storage.set("key1", large_value)
+    size_after_large = storage.size_in_bytes
+    # When overwriting, old size is subtracted, then new size is added
+    # Net change: (new_value_size - old_value_size)
+    expected_size_after_large = (
+        initial_size
+        + OBJECT_SIZE_APPROXIMATE_SIZE
+        + len(large_value)
+        + PER_ITEM_APPROXIMATE_SIZE
+    )
+    assert size_after_large == expected_size_after_large
+    assert storage.number_of_items == 1  # Still only one item
+
+    # Overwrite again with a smaller value
+    medium_value = b"medium"
+    storage.set("key1", medium_value)
+    size_after_medium = storage.size_in_bytes
+    expected_size_after_medium = (
+        initial_size
+        + OBJECT_SIZE_APPROXIMATE_SIZE
+        + len(medium_value)
+        + PER_ITEM_APPROXIMATE_SIZE
+    )
+    assert size_after_medium == expected_size_after_medium
+    assert storage.number_of_items == 1
+
+    # Verify the value is correct
+    assert storage.get("key1") == medium_value
+
+    storage.close()

@@ -138,11 +138,6 @@ class Storage[T]:
             self.__expiration_thread.stop(wait=wait)
 
     def _assert_not_closed(self) -> None:
-        """Check that the storage is not closed.
-
-        Raises:
-            RuntimeError: If the storage has been closed.
-        """
         if self.__closed:
             raise RuntimeError("Storage is closed")
 
@@ -174,38 +169,58 @@ class Storage[T]:
         with self.__lock:
             return len(self._data)
 
-    def __delete(self, key: str, already_deleted_size: int | None = None) -> None:
-        if already_deleted_size is None:
-            self._size_in_bytes -= (
-                self._data[key].size_in_bytes + PER_ITEM_APPROXIMATE_SIZE
-            )
-            del self._data[key]
-        else:
-            self._size_in_bytes -= already_deleted_size + PER_ITEM_APPROXIMATE_SIZE
+    def __delete(self, key: str) -> None:
+        value_obj = self._data[key]
+        self._size_in_bytes -= value_obj.size_in_bytes + PER_ITEM_APPROXIMATE_SIZE
+        del self._data[key]
 
     def __delete_least_recently_used_item(self) -> None:
-        key, value = self._data.popitem(last=False)
-        self.__delete(key, already_deleted_size=value.size_in_bytes)
+        try:
+            _, value_obj = self._data.popitem(last=False)
+        except KeyError:
+            return
+        # popitem already removed the item, so we only need to update size tracking
+        self._size_in_bytes -= value_obj.size_in_bytes + PER_ITEM_APPROXIMATE_SIZE
 
     def __delete_least_recently_used_items(
         self,
         until_size_in_bytes: int | None = None,
         until_number_of_items: int | None = None,
     ) -> None:
-        if until_size_in_bytes is None and until_number_of_items is None:
-            return
-        while True:
-            if (
-                until_size_in_bytes is not None
-                and self._size_in_bytes <= until_size_in_bytes
-            ):
-                break
-            if (
-                until_number_of_items is not None
-                and len(self._data) <= until_number_of_items
-            ):
-                break
-            self.__delete_least_recently_used_item()
+        if until_size_in_bytes is not None:
+            while self._size_in_bytes > until_size_in_bytes:
+                self.__delete_least_recently_used_item()
+        if until_number_of_items is not None:
+            while len(self._data) > until_number_of_items:
+                self.__delete_least_recently_used_item()
+
+    def _calculate_size_needed_for_eviction(
+        self, new_value_obj: Value[T], old_value_obj: Value[T] | None
+    ) -> int | None:
+        """Calculate the target size for eviction before adding a new value.
+
+        Args:
+            new_value_obj: The new value object to be stored.
+            old_value_obj: The existing value object if overwriting, None if new key.
+
+        Returns:
+            The target size in bytes to evict down to, or None if no size limit.
+        """
+        if self.size_limit_in_bytes is None:
+            return None
+
+        if old_value_obj is not None:
+            # When overwriting, PER_ITEM_APPROXIMATE_SIZE stays the same,
+            # so we only need to account for the difference in value sizes
+            net_size_change = new_value_obj.size_in_bytes - old_value_obj.size_in_bytes
+            return self.size_limit_in_bytes - net_size_change
+        else:
+            # When adding a new item, need space for value + PER_ITEM overhead
+            return (
+                self.size_limit_in_bytes
+                - new_value_obj.size_in_bytes
+                - PER_ITEM_APPROXIMATE_SIZE
+            )
 
     def set(
         self, key: str, value: T, ttl: float | DefaultTTLSentinel | None = DEFAULT_TTL
@@ -235,34 +250,57 @@ class Storage[T]:
             a single large item from dominating the cache. If the value is rejected
             due to size, this method returns silently without storing the value.
         """
+        # Validate value type and size before acquiring lock
         if self.size_limit_in_bytes is not None:
             if not isinstance(value, bytes):
                 raise ValueError("Value must be bytes if size_limit_in_bytes is set")
             if len(value) > self.size_limit_in_bytes / 2:
                 return
+
+        # Resolve TTL before acquiring lock
         if self.expiration_disabled:
             ttl = None
+        resolved_ttl: float | None = (
+            self.default_ttl if isinstance(ttl, DefaultTTLSentinel) else ttl
+        )
+
+        value_obj = Value[T](value=value, ttl=resolved_ttl)
+
         with self.__lock:
             self._assert_not_closed()
-            resolved_ttl: float | None = (
-                self.default_ttl if isinstance(ttl, DefaultTTLSentinel) else ttl
+
+            # Check if we're overwriting an existing key
+            old_value_obj: Value[T] | None = self._data.get(key)
+            is_overwriting = old_value_obj is not None
+
+            # Compute target sizes
+            until_size_in_bytes = self._calculate_size_needed_for_eviction(
+                value_obj, old_value_obj
             )
-            value_obj = Value[T](value=value, ttl=resolved_ttl)
-            if self.size_limit_in_bytes is not None:
-                target_size_in_bytes = (
-                    self.size_limit_in_bytes
-                    - value_obj.size_in_bytes
-                    - PER_ITEM_APPROXIMATE_SIZE
+            until_number_of_items: int | None = None
+            if self.max_items is not None and not is_overwriting:
+                until_number_of_items = self.max_items - 1
+
+            # Evict items if needed to make room
+            self.__delete_least_recently_used_items(
+                until_size_in_bytes=until_size_in_bytes,
+                until_number_of_items=until_number_of_items,
+            )
+
+            # Update size tracking: calculate net change instead of subtract then add
+            if is_overwriting:
+                # Net change: new size - old size (PER_ITEM_APPROXIMATE_SIZE cancels out)
+                assert old_value_obj is not None  # Type narrowing for type checker
+                size_delta = value_obj.size_in_bytes - old_value_obj.size_in_bytes
+                self._size_in_bytes += size_delta
+            else:
+                # New item: add value size + overhead
+                self._size_in_bytes += (
+                    value_obj.size_in_bytes + PER_ITEM_APPROXIMATE_SIZE
                 )
-                self.__delete_least_recently_used_items(
-                    until_size_in_bytes=target_size_in_bytes
-                )
-            if self.max_items is not None:
-                self.__delete_least_recently_used_items(
-                    until_number_of_items=self.max_items - 1
-                )
+
+            # Store the value (moves to end of OrderedDict for LRU)
             self._data[key] = value_obj
-            self._size_in_bytes += value_obj.size_in_bytes + PER_ITEM_APPROXIMATE_SIZE
 
     def get(self, key: str) -> T | CacheMissSentinel:
         """Retrieve a value from the cache.

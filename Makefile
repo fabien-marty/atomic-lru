@@ -2,6 +2,7 @@ UV=uv
 UV_RUN=$(UV) run
 FIX=1
 COVERAGE=0
+VERSION=$(shell $(UV_RUN) dunamai from git)
 
 default: help
 
@@ -38,6 +39,14 @@ clean: ## Clean the repository
 .PHONY: doc
 doc: ## Generate the documentation
 	$(UV_RUN) jinja-tree .
+
+.PHONY: set-version
+_set-version:
+	$(UV_RUN) python set-version.py $(VERSION) pyproject.toml atomic_lru/__init__.py
+
+.PHONY: build
+build: _set-version ## Build the package
+	$(UV) build
 
 .PHONY: no-dirty
 no-dirty: ## Check that the repository is clean

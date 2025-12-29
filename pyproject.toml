@@ -1,6 +1,6 @@
 [project]
 name = "atomic_lru"
-version = "0.0.1"
+version = "0.0.0.post4.dev0+73f98fd"
 description = "Thread-safe, dependency-free in-memory LRU storage library for Python 3.12+ (with optional TTL)"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -26,4 +26,5 @@ dev = [
     "ruff>=0.14.2",
     "ty>=0.0.7",
     "import-linter>=2.3",
+    "dunamai>=1.25.0",
 ]

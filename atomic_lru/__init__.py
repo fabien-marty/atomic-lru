@@ -7,9 +7,12 @@ from atomic_lru._storage import (
     Storage,
 )
 
+VERSION = "0.0.0.post4.dev0+73f98fd"
+
 __all__ = [
     "CACHE_MISS",
     "DEFAULT_TTL",
+    "VERSION",
     "Cache",
     "CacheMissSentinel",
     "DefaultTTLSentinel",
