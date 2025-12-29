@@ -1,5 +1,5 @@
 [project]
-name = "atomic_lru"
+name = "atomic-lru"
 version = "0.0.0.post4.dev0+73f98fd"
 description = "Thread-safe, dependency-free in-memory LRU storage library for Python 3.12+ (with optional TTL)"
 readme = "README.md"
