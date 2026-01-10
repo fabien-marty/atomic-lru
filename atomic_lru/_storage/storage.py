@@ -53,14 +53,16 @@ class Storage[T]:
             thread is created, and all TTL values are ignored. Defaults to False.
 
     Example:
-        >>> from atomic_lru import Storage
-        >>> # Create storage with size limit
-        >>> storage = Storage[bytes](size_limit_in_bytes=1024 * 1024)  # 1MB
-        >>> storage.set("key1", b"value1")
-        >>> value = storage.get("key1")
-        >>> if value is not CACHE_MISS:
-        ...     print(value)  # b'value1'
-        >>> storage.close()
+        ```python
+        from atomic_lru import Storage
+        # Create storage with size limit
+        storage = Storage[bytes](size_limit_in_bytes=1024 * 1024)  # 1MB
+        storage.set("key1", b"value1")
+        value = storage.get("key1")
+        if value is not CACHE_MISS:
+            print(value)  # b'value1'
+        storage.close()
+        ```
 
     Note:
         When using `size_limit_in_bytes`, values must be of type `bytes`. The size
@@ -93,18 +95,10 @@ class Storage[T]:
     __closed: bool = False
 
     def __post_init__(self) -> None:
-        """Initialize the storage instance.
-
-        Sets up the initial size tracking, starts the expiration thread if enabled,
-        and validates configuration parameters.
-
-        Raises:
-            ValueError: If `size_limit_in_bytes` is set to a value less than 4096.
-        """
         self._size_in_bytes = sys.getsizeof(self._data)
         if not self.expiration_disabled:
             self.__expiration_thread = ExpirationThread(
-                clean_callback=self.clean_expired,
+                clean_callback=self._clean_expired,
                 delay=self.expiration_thread_delay,
                 max_checks_per_iteration=self.expiration_thread_max_checks_per_iteration,
                 log=self.expiration_thread_log,
@@ -147,8 +141,8 @@ class Storage[T]:
 
         Returns:
             The approximate size in bytes. This includes the size of stored values
-            and overhead for the storage structure. The calculation is approximate
-            and only accurate when storing `bytes` values.
+                and overhead for the storage structure. The calculation is approximate
+                and only accurate when storing `bytes` values.
 
         Note:
             This property can be accessed even after the storage is closed.
@@ -315,7 +309,7 @@ class Storage[T]:
 
         Returns:
             The stored value if found and not expired, or `CACHE_MISS` if the key
-            doesn't exist or the value has expired.
+                doesn't exist or the value has expired.
 
         Note:
             Expired items are automatically deleted when accessed. This method does
@@ -354,7 +348,7 @@ class Storage[T]:
             self.__delete(key)
             return True
 
-    def clean_expired(
+    def _clean_expired(
         self, start: int | None = None, stop: int | None = None
     ) -> tuple[int, int]:
         """Clean expired items from the cache.
@@ -371,8 +365,9 @@ class Storage[T]:
 
         Returns:
             A tuple of (tested_count, deleted_count) where:
-            - tested_count: Number of items checked for expiration
-            - deleted_count: Number of expired items that were deleted
+
+                - tested_count: Number of items checked for expiration
+                - deleted_count: Number of expired items that were deleted
 
         Raises:
             RuntimeError: If the storage has been closed.

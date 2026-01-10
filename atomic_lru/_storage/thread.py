@@ -40,18 +40,20 @@ class ExpirationThread:
         log: Whether debug logging is enabled.
 
     Example:
-        >>> from atomic_lru._storage import _ExpirationThread
-        >>> def clean_func(start, stop):
-        ...     # Check items from start to stop
-        ...     return (10, 2)  # tested 10, deleted 2
-        >>> thread = _ExpirationThread(
-        ...     clean_callback=clean_func,
-        ...     delay=5.0,
-        ...     max_checks_per_iteration=1000
-        ... )
-        >>> thread.start()  # Start the background thread
-        >>> # Thread runs in background, checking every 5 seconds
-        >>> thread.stop(wait=True)  # Stop and wait for completion
+        ```python
+        from atomic_lru._storage import ExpirationThread
+        def clean_func(start, stop):
+            # Check items from start to stop
+            return (10, 2)  # tested 10, deleted 2
+        thread = ExpirationThread(
+            clean_callback=clean_func,
+            delay=5.0,
+            max_checks_per_iteration=1000
+        )
+        thread.start()  # Start the background thread
+        # Thread runs in background, checking every 5 seconds
+        thread.stop(wait=True)  # Stop and wait for completion
+        ```
     """
 
     clean_callback: Callable[[int | None, int | None], tuple[int, int]]

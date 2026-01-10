@@ -12,3 +12,4 @@ wheels/
 .coverage
 .idea/
 htmlcov
+site/

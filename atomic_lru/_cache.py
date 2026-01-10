@@ -18,8 +18,10 @@ class Serializer(Protocol):
     for storage in the cache. The default implementation uses pickle.
 
     Example:
-        >>> def my_serializer(value: Any) -> bytes:
-        ...     return json.dumps(value).encode('utf-8')
+        ```python
+        def my_serializer(value: Any) -> bytes:
+            return json.dumps(value).encode('utf-8')
+        ```
     """
 
     def __call__(self, value: Any) -> bytes: ...
@@ -32,8 +34,10 @@ class Deserializer(Protocol):
     the original value. It should be the inverse of the serializer.
 
     Example:
-        >>> def my_deserializer(value: bytes) -> Any:
-        ...     return json.loads(value.decode('utf-8'))
+        ```python
+        def my_deserializer(value: bytes) -> Any:
+            return json.loads(value.decode('utf-8'))
+        ```
     """
 
     def __call__(self, value: bytes) -> Any: ...
@@ -111,15 +115,17 @@ class Cache(Storage[bytes]):
         expiration_disabled: If True, disables TTL expiration entirely. Defaults to False.
 
     Example:
-        >>> from atomic_lru import Cache
-        >>> cache = Cache(max_items=100, default_ttl=3600)  # 1 hour TTL
-        >>> # Store any Python object
-        >>> cache.set("user:123", {"name": "Alice", "age": 30})
-        >>> # Retrieve it
-        >>> user = cache.get("user:123")
-        >>> if user is not CACHE_MISS:
-        ...     print(user["name"])  # "Alice"
-        >>> cache.close()
+        ```python
+        from atomic_lru import Cache
+        cache = Cache(max_items=100, default_ttl=3600)  # 1 hour TTL
+        # Store any Python object
+        cache.set("user:123", {"name": "Alice", "age": 30})
+        # Retrieve it
+        user = cache.get("user:123")
+        if user is not CACHE_MISS:
+            print(user["name"])  # "Alice"
+        cache.close()
+        ```
 
     Note:
         The cache stores serialized bytes internally, so `size_limit_in_bytes` works
@@ -207,7 +213,7 @@ class Cache(Storage[bytes]):
 
         Returns:
             The deserialized value if found and not expired, or `CACHE_MISS` if
-            the key doesn't exist or the value has expired.
+                the key doesn't exist or the value has expired.
 
         Raises:
             ValueError: If deserialization fails (e.g., corrupted data).

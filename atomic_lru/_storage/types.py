@@ -6,14 +6,16 @@ class DefaultTTLSentinel:
     providing a TTL value or disabling expiration.
 
     Example:
-        >>> from atomic_lru import Cache, DEFAULT_TTL
-        >>> cache = Cache(default_ttl=3600)  # 1 hour default
-        >>> # Use default TTL
-        >>> cache.set("key1", "value1", ttl=DEFAULT_TTL)
-        >>> # Override with specific TTL
-        >>> cache.set("key2", "value2", ttl=1800)  # 30 minutes
-        >>> # Disable expiration for this item
-        >>> cache.set("key3", "value3", ttl=None)
+        ```python
+        from atomic_lru import Cache, DEFAULT_TTL
+        cache = Cache(default_ttl=3600)  # 1 hour default
+        # Use default TTL
+        cache.set("key1", "value1", ttl=DEFAULT_TTL)
+        # Override with specific TTL
+        cache.set("key2", "value2", ttl=1800)  # 30 minutes
+        # Disable expiration for this item
+        cache.set("key3", "value3", ttl=None)
+        ```
     """
 
     def __repr__(self) -> str:
@@ -36,13 +38,15 @@ class CacheMissSentinel:
     `get()` methods instead of raising an exception or returning None.
 
     Example:
-        >>> from atomic_lru import Cache, CACHE_MISS
-        >>> cache = Cache()
-        >>> result = cache.get("nonexistent_key")
-        >>> if result is CACHE_MISS:
-        ...     print("Key not found")
-        ... else:
-        ...     print(f"Found: {result}")
+        ```python
+        from atomic_lru import Cache, CACHE_MISS
+        cache = Cache()
+        result = cache.get("nonexistent_key")
+        if result is CACHE_MISS:
+            print("Key not found")
+        else:
+            print(f"Found: {result}")
+        ```
     """
 
     def __repr__(self) -> str:
@@ -56,6 +60,8 @@ This constant is returned by `get()` methods when the requested key doesn't
 exist in the cache or the value has expired. Use `is` or `is not` to check
 for cache misses:
 
-    >>> if cache.get("key") is CACHE_MISS:
-    ...     # Handle cache miss
+    ```python
+    if cache.get("key") is CACHE_MISS:
+        # Handle cache miss
+    ```
 """

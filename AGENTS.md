@@ -29,3 +29,16 @@ Don't modify `README.md` file directly as it is generated from the `README.md.te
 - Use generic types: `Storage[T]`, `Value[T]`
 - Use `|` for union types (e.g., `int | None`, not `Optional[int]`)
 - Use `Protocol` for structural subtyping (e.g., `Serializer`, `Deserializer`)
+
+### Comments
+
+- **Always** Python style comments when adding doctrings
+- When adding examples in docstrings, use this format:
+
+Example:
+    ```python
+    import os
+    print(os.getcwd())
+    ```
+
+- Don't use `>>>` in docstrings
