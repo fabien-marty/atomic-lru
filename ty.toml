@@ -1,3 +1,3 @@
 [src]
 
-exclude = ["doc/*.py"]
+exclude = ["docs/tutorials/*.py", "site/*.py"]

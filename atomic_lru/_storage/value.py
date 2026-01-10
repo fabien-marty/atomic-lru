@@ -28,15 +28,15 @@ class Value[T]:
         ValueError: If `ttl` is negative.
 
     Example:
-        >>> from atomic_lru._storage import _Value
-        >>> # Value without expiration
-        >>> val1 = _Value(value="hello", ttl=None)
-        >>> val1.is_expired
-        False
-        >>> # Value with 60 second TTL
-        >>> val2 = _Value(value="world", ttl=60.0)
-        >>> val2.is_expired  # False immediately after creation
-        False
+        ```python
+        from atomic_lru._storage import Value
+        # Value without expiration
+        val1 = Value(value="hello", ttl=None)
+        val1.is_expired  # False
+        # Value with 60 second TTL
+        val2 = Value(value="world", ttl=60.0)
+        val2.is_expired  # False immediately after creation
+        ```
     """
 
     value: T

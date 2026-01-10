@@ -32,13 +32,17 @@ endif
 
 .PHONY: clean
 clean: ## Clean the repository
-	rm -Rf .venv .*_cache build dist htmlcov .coverage
+	rm -Rf .venv .*_cache build dist htmlcov .coverage site
 	find . -type d -name __pycache__ -exec rm -Rf {} \; 2>/dev/null || true
 	find . -type d -name .ruff_cache -exec rm -Rf {} \; 2>/dev/null || true
 
 .PHONY: doc
 doc: ## Generate the documentation
-	$(UV_RUN) jinja-tree .
+	$(UV_RUN) mkdocs build --clean --strict
+
+.PHONY: serve-doc
+serve-doc: ## Server the documentation site
+	$(UV_RUN) mkdocs serve --watch docs
 
 .PHONY: set-version
 _set-version:

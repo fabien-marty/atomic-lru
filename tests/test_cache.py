@@ -247,7 +247,7 @@ def test_cache_clean_expired():
 
     time.sleep(0.2)
 
-    checked, deleted = cache.clean_expired()
+    checked, deleted = cache._clean_expired()
     assert checked == 2
     assert deleted == 1
     assert cache.number_of_items == 1

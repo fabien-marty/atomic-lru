@@ -88,7 +88,7 @@ def test_storage_basic():
     assert storage.get("key2") is CACHE_MISS
     assert storage.get("key1") == b"v1"
 
-    checked, deleted = storage.clean_expired()
+    checked, deleted = storage._clean_expired()
     assert checked == 1
     assert deleted == 0
     assert storage.get("key1") == b"v1"
@@ -131,19 +131,19 @@ def test_storage_expiration_manual():
 
     time.sleep(0.2)
 
-    checked, deleted = storage.clean_expired(start=0, stop=10)
+    checked, deleted = storage._clean_expired(start=0, stop=10)
     assert checked == 10
     assert deleted == 10
     assert storage.number_of_items == 90
 
-    checked, deleted = storage.clean_expired(start=0, stop=10)
+    checked, deleted = storage._clean_expired(start=0, stop=10)
     assert checked == 10
     assert deleted == 10
     assert storage.number_of_items == 80
 
     storage.set("new", b"new")
 
-    checked, deleted = storage.clean_expired()
+    checked, deleted = storage._clean_expired()
     assert checked == 81
     assert deleted == 80
 
@@ -225,7 +225,7 @@ def test_no_expiration_storage():
     )
     storage.set("key1", 1)
     assert storage.get("key1") == 1
-    assert storage.clean_expired() == (0, 0)
+    assert storage._clean_expired() == (0, 0)
     storage.close()
 
 

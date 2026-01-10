@@ -1,4 +1,4 @@
-from atomic_lru._cache import Cache
+from atomic_lru._cache import Cache, Deserializer, Serializer
 from atomic_lru._storage import (
     CACHE_MISS,
     DEFAULT_TTL,
@@ -16,5 +16,7 @@ __all__ = [
     "Cache",
     "CacheMissSentinel",
     "DefaultTTLSentinel",
+    "Deserializer",
+    "Serializer",
     "Storage",
 ]

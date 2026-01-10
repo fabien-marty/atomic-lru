@@ -1,0 +1,37 @@
+site_name: "Atomic LRU Python Library"
+repo_url: https://github.com/fabien-marty/atomic-lru
+
+theme:
+  name: "material"
+  features:
+    - navigation.path
+
+plugins:
+- exclude:
+    glob:
+      - "_includes/*"
+- search
+- awesome-pages
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+          parameter_headings: false
+- macros:
+    module_name: mkdocs_main
+    on_undefined: strict
+
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - footnotes
