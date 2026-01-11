@@ -77,7 +77,7 @@ jobs:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
 
   githubpages:
-    runs-on: ubuntu-24.04-latest
+    runs-on: ubuntu-24.04
     needs: ci
     permissions:
       contents: read
