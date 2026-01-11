@@ -298,3 +298,62 @@ def test_overwrite_existing_key_size_tracking():
     assert storage.get("key1") == medium_value
 
     storage.close()
+
+
+def test_clear():
+    """Test that clear() removes all items and resets size tracking."""
+    storage = Storage[bytes](
+        size_limit_in_bytes=4096,
+        max_items=100,
+        expiration_thread_max_checks_per_iteration=0,
+    )
+    initial_size = storage.size_in_bytes
+    assert storage.number_of_items == 0
+
+    # Clear empty cache should work
+    storage.clear()
+    assert storage.number_of_items == 0
+    assert storage.size_in_bytes == initial_size
+
+    # Add some items
+    storage.set("key1", b"value1")
+    storage.set("key2", b"value2")
+    storage.set("key3", b"value3")
+    assert storage.number_of_items == 3
+    assert storage.size_in_bytes > initial_size
+
+    # Verify items exist
+    assert storage.get("key1") == b"value1"
+    assert storage.get("key2") == b"value2"
+    assert storage.get("key3") == b"value3"
+
+    # Clear the cache
+    storage.clear()
+    assert storage.number_of_items == 0
+    assert storage.size_in_bytes == initial_size
+
+    # Verify items are gone
+    assert storage.get("key1") is CACHE_MISS
+    assert storage.get("key2") is CACHE_MISS
+    assert storage.get("key3") is CACHE_MISS
+
+    # Can add items after clearing
+    storage.set("key4", b"value4")
+    assert storage.number_of_items == 1
+    assert storage.get("key4") == b"value4"
+
+    storage.close()
+
+
+def test_clear_closed_storage():
+    """Test that clear() raises RuntimeError when storage is closed."""
+    storage = Storage[bytes](
+        size_limit_in_bytes=4096,
+        max_items=100,
+        expiration_thread_max_checks_per_iteration=0,
+    )
+    storage.set("key1", b"value1")
+    storage.close()
+
+    with pytest.raises(RuntimeError, match="Storage is closed"):
+        storage.clear()
