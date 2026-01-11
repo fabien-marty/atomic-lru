@@ -348,6 +348,20 @@ class Storage[T]:
             self.__delete(key)
             return True
 
+    def clear(self) -> None:
+        """Clear all items from the cache.
+
+        Removes all key-value pairs from the cache and resets the size tracking
+        to the initial empty state. This operation is thread-safe.
+
+        Raises:
+            RuntimeError: If the storage has been closed.
+        """
+        with self.__lock:
+            self._assert_not_closed()
+            self._data.clear()
+            self._size_in_bytes = sys.getsizeof(self._data)
+
     def _clean_expired(
         self, start: int | None = None, stop: int | None = None
     ) -> tuple[int, int]:
