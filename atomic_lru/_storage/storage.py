@@ -3,6 +3,7 @@ import threading
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from itertools import islice
+from typing import Generic, TypeVar
 
 from atomic_lru._storage.thread import ExpirationThread
 from atomic_lru._storage.types import (
@@ -13,12 +14,14 @@ from atomic_lru._storage.types import (
 )
 from atomic_lru._storage.value import Value
 
+T = TypeVar("T")
+
 # Approximate size (in bytes) of an item in the OrderedDict
 PER_ITEM_APPROXIMATE_SIZE = 32
 
 
 @dataclass
-class Storage[T]:
+class Storage(Generic[T]):
     """Thread-safe in-memory storage with LRU eviction and optional TTL expiration.
 
     This class provides a thread-safe storage mechanism that automatically evicts
@@ -258,7 +261,7 @@ class Storage[T]:
             self.default_ttl if isinstance(ttl, DefaultTTLSentinel) else ttl
         )
 
-        value_obj = Value[T](value=value, ttl=resolved_ttl)
+        value_obj = Value(value=value, ttl=resolved_ttl)
 
         with self.__lock:
             self._assert_not_closed()

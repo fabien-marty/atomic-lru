@@ -25,8 +25,7 @@ Don't modify `README.md` file directly as it is generated from the `README.md.te
 ## Coding Conventions
 
 ### Type Hints
-- **Always** use type hints (Python 3.12+ features)
-- Use generic types: `Storage[T]`, `Value[T]`
+- **Always** use type hints (Python 3.10+ features)
 - Use `|` for union types (e.g., `int | None`, not `Optional[int]`)
 - Use `Protocol` for structural subtyping (e.g., `Serializer`, `Deserializer`)
 

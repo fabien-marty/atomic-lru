@@ -2,12 +2,15 @@
 # (if T is bytes)
 import time
 from dataclasses import dataclass
+from typing import Generic, TypeVar
 
 OBJECT_SIZE_APPROXIMATE_SIZE = 129
 
+T = TypeVar("T")
+
 
 @dataclass(frozen=True, kw_only=True, slots=True)
-class Value[T]:
+class Value(Generic[T]):
     """A wrapper class for cache values with optional time-to-live (TTL) support.
 
     This class stores a value along with optional expiration metadata. When a TTL
