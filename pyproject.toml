@@ -1,9 +1,9 @@
 [project]
 name = "atomic-lru"
 version = "0.0.0.post4.dev0+73f98fd"
-description = "Thread-safe, dependency-free in-memory LRU storage library for Python 3.12+ (with optional TTL)"
+description = "Thread-safe, dependency-free in-memory LRU storage library for Python 3.10+ (with optional TTL)"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 authors = [{ name = "Fabien MARTY", email = "fabien.marty@gmail.com" }]
 maintainers = [{ name = "Fabien MARTY", email = "fab@fabien-marty.dev" }]
 license = "MIT"

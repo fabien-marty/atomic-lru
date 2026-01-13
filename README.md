@@ -3,7 +3,7 @@
 
 ## What is this?
 
-This is a **thread-safe** and **dependency-free** **in-memory** **LRU storage** Python 3.12+ library with optional Time To Live (TTL).
+This is a **thread-safe** and **dependency-free** **in-memory** **LRU storage** Python 3.10+ library with optional Time To Live (TTL).
 
 You can define:
 
