@@ -1,4 +1,5 @@
 import time
+from typing import Any, cast
 
 import pytest
 
@@ -295,7 +296,8 @@ def test_cache_default_serializer_pickle():
     assert retrieved == complex_nested
     assert retrieved is not CACHE_MISS
     assert isinstance(retrieved, dict)
-    assert retrieved["level1"]["level2"]["level3"]["list"][3]["nested"] == "dict"
+    retrieved_dict = cast(dict[str, Any], retrieved)
+    assert retrieved_dict["level1"]["level2"]["level3"]["list"][3]["nested"] == "dict"
 
 
 def test_cache_multiple_operations():
