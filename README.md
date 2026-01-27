@@ -90,7 +90,7 @@ if obj is not CACHE_MISS:
 
 ## Full API reference
 
-Refer to the [API reference](reference/api.md) for the full API.
+Refer to the [API reference](https://fabien-marty.github.io/atomic-lru/reference/api/) for the full API.
 
 ## DEV
 
