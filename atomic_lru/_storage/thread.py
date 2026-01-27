@@ -64,6 +64,9 @@ class ExpirationThread:
     # Internal threading event used to signal thread termination
     _stop_event: threading.Event = field(default_factory=threading.Event)
 
+    # Internal lock to protect thread start/stop operations
+    _lock: threading.Lock = field(default_factory=threading.Lock)
+
     # Internal thread instance
     _thread: threading.Thread | None = None
 
@@ -89,14 +92,15 @@ class ExpirationThread:
         automatically terminate when the main process exits (daemon thread).
 
         Note:
-            The thread is started as a daemon thread, meaning it will not prevent
-            the program from exiting if it's still running.
+            This method is thread-safe. The thread is started as a daemon thread,
+            meaning it will not prevent the program from exiting if it's still running.
         """
-        if self._thread is not None:
-            return
-        self._thread = threading.Thread(target=self.loop, daemon=True)
-        self._thread.start()
-        self._debug("Expiration thread started")
+        with self._lock:
+            if self._thread is not None:
+                return
+            self._thread = threading.Thread(target=self.loop, daemon=True)
+            self._thread.start()
+            self._debug("Expiration thread started")
 
     def stop(self, wait: bool = False) -> None:
         """Stop the expiration thread.
@@ -110,15 +114,17 @@ class ExpirationThread:
                 False.
 
         Note:
-            When `wait=False`, the thread may continue running briefly after this
-            method returns. Use `wait=True` to ensure the thread has fully stopped
-            before proceeding.
+            This method is thread-safe. When `wait=False`, the thread may continue
+            running briefly after this method returns. Use `wait=True` to ensure the
+            thread has fully stopped before proceeding.
         """
-        if self._thread is None:
-            return
+        with self._lock:
+            if self._thread is None:
+                return
+            thread = self._thread
         self._stop_event.set()
         if wait:
-            self._thread.join()
+            thread.join()
             self._debug("Expiration thread stopped")
         else:
             self._debug("Stop event set for expiration thread")
@@ -135,7 +141,8 @@ class ExpirationThread:
            items have been checked)
         4. Waits for `delay` seconds before the next iteration
 
-        The loop terminates when the stop event is set via `stop()`. If
+        The loop terminates when the stop event is set via `stop()`, or when the
+        storage is closed (indicated by RuntimeError from the callback). If
         `max_checks_per_iteration` is 0, no checks are performed but the loop
         continues to wait, allowing the thread to be stopped gracefully.
 
@@ -146,9 +153,14 @@ class ExpirationThread:
         start_index: int = 0
         while not self._stop_event.is_set():
             if self.max_checks_per_iteration > 0:
-                tested, deleted = self.clean_callback(
-                    start_index, start_index + self.max_checks_per_iteration
-                )
+                try:
+                    tested, deleted = self.clean_callback(
+                        start_index, start_index + self.max_checks_per_iteration
+                    )
+                except RuntimeError:
+                    # Storage was closed while we were running - exit gracefully
+                    self._debug("Storage closed, expiration thread exiting")
+                    return
                 if tested == 0:
                     start_index = 0  # restart from the beginning
                 else:

@@ -98,6 +98,10 @@ class Storage(Generic[T]):
     __closed: bool = False
 
     def __post_init__(self) -> None:
+        # Validate configuration before allocating any resources
+        if self.size_limit_in_bytes is not None and self.size_limit_in_bytes < 4096:
+            raise ValueError("size_limit_in_bytes must be greater than 4096")
+
         self._size_in_bytes = sys.getsizeof(self._data)
         if not self.expiration_disabled:
             self.__expiration_thread = ExpirationThread(
@@ -107,15 +111,13 @@ class Storage(Generic[T]):
                 log=self.expiration_thread_log,
             )
             self.__expiration_thread.start()
-        if self.size_limit_in_bytes is not None and self.size_limit_in_bytes < 4096:
-            raise ValueError("size_limit_in_bytes must be greater than 4096")
 
     def close(self, wait: bool = False) -> None:
         """Close the storage and stop the expiration thread.
 
         Marks the storage as closed and stops the background expiration thread
-        if it was started. After closing, all operations except `size_in_bytes`
-        and `number_of_items` will raise a `RuntimeError`.
+        if it was started. After closing, all operations except `size_in_bytes`,
+        `number_of_items`, and `get()` will raise a `RuntimeError`.
 
         Args:
             wait: If True, blocks until the expiration thread has fully stopped.
@@ -123,13 +125,17 @@ class Storage(Generic[T]):
                 Defaults to False.
 
         Note:
-            This method is idempotent - calling it multiple times has no effect.
+            This method is idempotent - calling it multiple times
+            or from multiple threads has no effect beyond the first call.
             It's recommended to call this method when you're done with the storage
             to ensure proper cleanup of background threads.
         """
-        if self.__closed:
-            return
-        self.__closed = True
+        with self.__lock:
+            if self.__closed:
+                return
+            self.__closed = True
+        # Stop thread outside the lock to avoid potential deadlock
+        # (thread's _clean_expired also acquires the lock)
         if not self.expiration_disabled:
             assert self.__expiration_thread is not None
             self.__expiration_thread.stop(wait=wait)
@@ -317,7 +323,8 @@ class Storage(Generic[T]):
         Note:
             Expired items are automatically deleted when accessed. This method does
             not raise exceptions for missing keys - use `CACHE_MISS` to check for
-            cache misses.
+            cache misses. Unlike mutating operations (`set`, `delete`, `clear`),
+            this method can be called even after the storage has been closed.
         """
         with self.__lock:
             value_obj = self._data.get(key)
