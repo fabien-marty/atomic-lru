@@ -13,3 +13,6 @@ wheels/
 .idea/
 htmlcov
 site/
+
+.cursor
+backlog
