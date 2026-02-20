@@ -1,13 +1,14 @@
 ---
 id: TASK-8
 title: 'Bug: Misleading error message for `size_limit_in_bytes` validation'
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-02-20 14:14'
-updated_date: '2026-02-20 14:20'
+updated_date: '2026-02-20 14:30'
 labels:
   - Bug
   - Planned
+  - Implemented
 dependencies: []
 references:
   - atomic_lru/_storage/storage.py

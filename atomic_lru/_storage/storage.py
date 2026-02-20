@@ -100,7 +100,7 @@ class Storage(Generic[T]):
     def __post_init__(self) -> None:
         # Validate configuration before allocating any resources
         if self.size_limit_in_bytes is not None and self.size_limit_in_bytes < 4096:
-            raise ValueError("size_limit_in_bytes must be greater than 4096")
+            raise ValueError("size_limit_in_bytes must be at least 4096")
 
         self._size_in_bytes = sys.getsizeof(self._data)
         if not self.expiration_disabled:
