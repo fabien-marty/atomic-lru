@@ -357,3 +357,48 @@ def test_clear_closed_storage():
 
     with pytest.raises(RuntimeError, match="Storage is closed"):
         storage.clear()
+
+
+def test_overwrite_existing_key_updates_lru_position():
+    """Overwriting a key via set() should move it to the most recently used position."""
+    storage = Storage[bytes](size_limit_in_bytes=None, max_items=3)
+
+    storage.set("a", b"a")
+    storage.set("b", b"b")
+    storage.set("c", b"c")
+
+    # Overwrite "a" — it should now be the most recently used
+    storage.set("a", b"a2")
+
+    # Adding "d" must evict "b" (oldest), not "a"
+    storage.set("d", b"d")
+
+    assert storage.get("a") == b"a2"  # should still be present
+    assert storage.get("b") is CACHE_MISS  # evicted (LRU)
+    assert storage.get("c") == b"c"
+    assert storage.get("d") == b"d"
+
+    storage.close()
+
+
+def test_overwrite_existing_key_updates_lru_position_with_multiple_overwrites():
+    """Multiple set() overwrites correctly track the least recently used key."""
+    storage = Storage[bytes](size_limit_in_bytes=None, max_items=3)
+
+    storage.set("a", b"a")
+    storage.set("b", b"b")
+    storage.set("c", b"c")
+
+    # Overwrite "b" then "a" — "c" becomes the oldest
+    storage.set("b", b"b2")
+    storage.set("a", b"a2")
+
+    # Adding "d" must evict "c" (actual LRU)
+    storage.set("d", b"d")
+
+    assert storage.get("a") == b"a2"
+    assert storage.get("b") == b"b2"
+    assert storage.get("c") is CACHE_MISS  # evicted (LRU)
+    assert storage.get("d") == b"d"
+
+    storage.close()
