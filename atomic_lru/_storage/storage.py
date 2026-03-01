@@ -290,6 +290,11 @@ class Storage(Generic[T]):
                 until_number_of_items=until_number_of_items,
             )
 
+            # Re-check: the key being overwritten may have been the LRU item and got evicted
+            if is_overwriting and key not in self._data:
+                is_overwriting = False
+                old_value_obj = None
+
             # Update size tracking: calculate net change instead of subtract then add
             if is_overwriting:
                 # Net change: new size - old size (PER_ITEM_APPROXIMATE_SIZE cancels out)

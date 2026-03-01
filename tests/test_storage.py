@@ -402,3 +402,55 @@ def test_overwrite_existing_key_updates_lru_position_with_multiple_overwrites():
     assert storage.get("d") == b"d"
 
     storage.close()
+
+
+def test_overwrite_lru_item_size_tracking():
+    """Size tracking stays correct when set() overwrites a key that gets evicted as the LRU item.
+
+    Scenario: "A" is the LRU item. Calling set("A", larger_value) triggers eviction which
+    pops "A" itself (the LRU). The subsequent size accounting must treat the store as a fresh
+    insert, not an overwrite, to avoid double-subtracting the old size.
+    """
+    small_value = b"X" * 2000
+    large_value = b"Y" * 2100
+
+    small_value_obj = Value(value=small_value, ttl=None)
+    large_value_obj = Value(value=large_value, ttl=None)
+    item_total_small = small_value_obj.size_in_bytes + PER_ITEM_APPROXIMATE_SIZE
+    item_total_large = large_value_obj.size_in_bytes + PER_ITEM_APPROXIMATE_SIZE
+
+    # The storage starts with an OrderedDict overhead baked into _size_in_bytes.
+    # Use a throw-away storage instance to measure the initial overhead so we can
+    # set size_limit tightly enough that overwriting "A" triggers eviction of "A" itself.
+    _probe = Storage[bytes](size_limit_in_bytes=4096)
+    initial_overhead = _probe.size_in_bytes
+    _probe.close()
+
+    # Size limit that fits exactly the initial overhead plus two small items.
+    size_limit = initial_overhead + item_total_small * 2
+    assert size_limit >= 4096, "size_limit must meet the Storage minimum"
+    # large_value raw length must not exceed size_limit / 2 or Storage silently drops it
+    assert len(large_value) <= size_limit / 2
+
+    storage = Storage[bytes](size_limit_in_bytes=size_limit)
+
+    # Insert "A" first (it becomes the LRU), then "B"
+    storage.set("A", small_value)
+    storage.set("B", small_value)
+    assert storage.size_in_bytes == size_limit
+
+    # Overwrite "A" with a larger value — eviction will pop "A" (the LRU) to make room,
+    # then re-insert it as a fresh entry with the new value
+    storage.set("A", large_value)
+
+    # "A" must be retrievable with the new value
+    assert storage.get("A") == large_value
+
+    # "B" should still be present (it was not the LRU)
+    assert storage.get("B") == small_value
+
+    # Size must reflect the initial overhead plus one small item ("B") and one large item ("A")
+    expected_size = initial_overhead + item_total_small + item_total_large
+    assert storage.size_in_bytes == expected_size
+
+    storage.close()
