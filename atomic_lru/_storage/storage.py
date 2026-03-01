@@ -302,8 +302,9 @@ class Storage(Generic[T]):
                     value_obj.size_in_bytes + PER_ITEM_APPROXIMATE_SIZE
                 )
 
-            # Store the value (moves to end of OrderedDict for LRU)
+            # Store the value and ensure it's at the end of the LRU order (most recently used)
             self._data[key] = value_obj
+            self._data.move_to_end(key)
 
     def get(self, key: str) -> T | CacheMissSentinel:
         """Retrieve a value from the cache.

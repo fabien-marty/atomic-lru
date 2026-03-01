@@ -197,6 +197,28 @@ def test_cache_lru_behavior():
     assert cache.get("key4") == "value4"  # Should be there
 
 
+def test_cache_lru_behavior_with_set_overwrite():
+    cache = Cache(max_items=3, size_limit_in_bytes=None, default_ttl=None)
+
+    cache.set("key1", "value1")
+    cache.set("key2", "value2")
+    cache.set("key3", "value3")
+
+    assert cache.number_of_items == 3
+
+    # Overwrite key1 via set() — this should move it to most recently used
+    cache.set("key1", "value1_updated")
+
+    # Add key4, should evict key2 (least recently used)
+    cache.set("key4", "value4")
+
+    assert cache.number_of_items == 3
+    assert cache.get("key1") == "value1_updated"  # Should still be there
+    assert cache.get("key2") is CACHE_MISS  # Should be evicted
+    assert cache.get("key3") == "value3"  # Should still be there
+    assert cache.get("key4") == "value4"  # Should be there
+
+
 def test_cache_size_limit():
     cache = Cache(size_limit_in_bytes=8192, max_items=100, default_ttl=None)
 
