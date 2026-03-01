@@ -22,6 +22,10 @@ Execute `make doc` to generate the documentation. Don't propose any changes if t
 
 Don't modify `README.md` file directly as it is generated from the `README.md.template` file (and other files).
 
+## Issues management
+
+We use GitHub Issues to manage the issues. To list, edit, create issues, use the `gh` command line tool. When creating an issue, add the `AI` label to it.
+
 ## Coding Conventions
 
 ### Type Hints
