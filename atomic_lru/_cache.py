@@ -191,14 +191,25 @@ class Cache(Storage[bytes]):
 
         Raises:
             RuntimeError: If the cache has been closed.
-            ValueError: If serialization fails, or if size limits are set and
-                the serialized value is too large.
+            ValueError: If serialization fails, or if `size_limit_in_bytes` is
+                set and the serialized value exceeds half of `size_limit_in_bytes`
+                (items that large would be silently dropped by the underlying
+                storage, so an explicit error is raised instead).
 
         Note:
             The value is serialized before size checks are performed, so the
             serialized size is what counts toward size limits.
         """
         serialized_value = self._serialize(value)
+        if (
+            self.size_limit_in_bytes is not None
+            and len(serialized_value) > self.size_limit_in_bytes / 2
+        ):
+            raise ValueError(
+                f"Serialized value size ({len(serialized_value)} bytes) exceeds "
+                f"half of size_limit_in_bytes ({self.size_limit_in_bytes} bytes) "
+                "and would be silently dropped"
+            )
         super().set(key=key, value=serialized_value, ttl=ttl)
 
     def get(self, key: str) -> Any | CacheMissSentinel:

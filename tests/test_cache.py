@@ -229,11 +229,11 @@ def test_cache_size_limit():
     assert cache.number_of_items > 0
     assert cache.size_in_bytes < 8192
 
-    # Try to store a very large value
+    # Try to store a very large value — should raise ValueError (not silently drop)
     large_value = "x" * 10000
-    cache.set("large", large_value)
+    with pytest.raises(ValueError, match="exceeds half of size_limit_in_bytes"):
+        cache.set("large", large_value)
 
-    # Large value should be rejected (exceeds size_limit_in_bytes / 2)
     assert cache.get("large") is CACHE_MISS
 
 
