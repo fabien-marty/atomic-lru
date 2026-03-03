@@ -53,6 +53,9 @@ user = cache.get(key="user:123")
 if user is not CACHE_MISS:
     # cache hit
     print(user["name"])
+
+# Always close to stop the background expiration thread
+cache.close()
 ```
 
 ### Low level API *(without serialization/deserialization)*
@@ -86,6 +89,9 @@ if obj is not CACHE_MISS:
     # cache hit
     assert isinstance(obj, ExpensiveObject)
     assert id(obj) == id(value)  # this is the same object instance
+
+# Always close to stop the background expiration thread
+storage.close()
 ```
 
 ## Full API reference
