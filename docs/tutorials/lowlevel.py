@@ -24,3 +24,6 @@ if obj is not CACHE_MISS:
     # cache hit
     assert isinstance(obj, ExpensiveObject)
     assert id(obj) == id(value)  # this is the same object instance
+
+# Always close to stop the background expiration thread
+storage.close()

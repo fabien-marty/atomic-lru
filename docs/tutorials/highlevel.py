@@ -15,3 +15,6 @@ user = cache.get(key="user:123")
 if user is not CACHE_MISS:
     # cache hit
     print(user["name"])
+
+# Always close to stop the background expiration thread
+cache.close()
