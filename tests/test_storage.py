@@ -199,7 +199,9 @@ def test_storage_various():
     assert str(y) == "<CacheMiss>"
 
     storage = Storage[bytes](expiration_thread_max_checks_per_iteration=0)
-    storage.delete("key1")  # delete a non-existing key should do nothing
+    assert (
+        storage.delete("key1") is False
+    )  # delete a non-existing key should do nothing
 
     storage.set("key1", b"v1", ttl=0.01)
 
@@ -207,6 +209,14 @@ def test_storage_various():
 
     # Get an expired key should return CACHE_MISS
     assert storage.get("key1") is CACHE_MISS
+
+
+def test_storage_delete_return_value():
+    storage = Storage[bytes](expiration_thread_max_checks_per_iteration=0)
+    storage.set("key1", b"v1")
+    assert storage.delete("key1") is True
+    assert storage.delete("key1") is False
+    storage.close()
 
 
 def test_non_bytes_storage():
