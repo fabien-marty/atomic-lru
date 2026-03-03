@@ -246,14 +246,14 @@ def test_cache_delete():
     assert cache.number_of_items == 2
     assert cache.get("key1") == "value1"
 
-    cache.delete("key1")
+    assert cache.delete("key1") is True
 
     assert cache.number_of_items == 1
     assert cache.get("key1") is CACHE_MISS
     assert cache.get("key2") == "value2"
 
     # Delete non-existent key should do nothing
-    cache.delete("nonexistent")
+    assert cache.delete("nonexistent") is False
     assert cache.number_of_items == 1
 
 
