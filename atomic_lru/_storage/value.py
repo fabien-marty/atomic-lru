@@ -85,7 +85,7 @@ class Value(Generic[T]):
 
         Note:
             The size calculation includes an approximation of the object overhead
-            (`_OBJECT_SIZE_APPROXIMATE_SIZE`) plus the length of the bytes value.
+            (`OBJECT_SIZE_APPROXIMATE_SIZE`) plus the length of the bytes value.
             For non-bytes values, this method returns 0 as accurate size
             calculation would require introspection of the value type.
         """
