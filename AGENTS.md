@@ -24,7 +24,37 @@ Don't modify `README.md` file directly as it is generated from the `README.md.te
 
 ## Issues management
 
-We use GitHub Issues to manage the issues. To list, edit, create issues, use the `gh` command line tool. When creating an issue, add the `AI` label to it.
+We use GitHub Issues to manage the issues. To list, edit, create issues, use the `gh` command line tool. When creating an issue, add the `Reporter: AI` label to it.
+
+## Standardized labels
+
+We use the following standardized labels.
+
+### For issues only
+
+- `Reporter: AI` - Issues created by AI agents
+
+- `Status: Validated` - Issues that have been validated and that are ready to be planned/implemented
+- `Status: Planning` - Issues that are being worked on in planning mode
+- `Status: Planned` - Issues with a validated plan
+- `Status: Implementing` - Issues that are being implemented
+- `Status: Implemented` - Issues that have been implemented (in a pull-request or in a local branch)
+
+### For issues AND pull-requests
+
+- `Type: Added` - Issues that are new features 
+- `Type: Changed` - Issues that are changes to existing features
+- `Type: Removed` - Issues that are removals of existing features
+- `Type: Fixed` - Issues that are bug fixes
+- `Type: Security` - Issues that are security issues
+- `Type: Dependencies` - Issues that are dependencies changes
+- `Type: Documentation` - Issues that are documentation changes
+- `Priority: Critical`
+- `Priority: High`
+- `Priority: Medium`
+- `Priority: Low`
+
+Issues MUSTN'T have multiple `Status: *` or `Priority: *` or `Type: *` labels at the same time.
 
 ## Coding Conventions
 
