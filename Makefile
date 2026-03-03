@@ -41,7 +41,7 @@ doc: ## Generate the documentation
 	$(UV_RUN) mkdocs build --clean --strict
 
 .PHONY: serve-doc
-serve-doc: ## Server the documentation site
+serve-doc: ## Serve the documentation site
 	$(UV_RUN) mkdocs serve --watch docs
 
 .PHONY: set-version
