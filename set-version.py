@@ -18,8 +18,9 @@ def update_version_in_file(file: str, version: str):
         else:
             lines.append(line)
 
+    trailing_newline = "\n" if c.endswith("\n") else ""
     with open(file, "w") as g:
-        g.write("\n".join(lines))
+        g.write("\n".join(lines) + trailing_newline)
 
 
 def update_version(version: str, files: list[str]):
