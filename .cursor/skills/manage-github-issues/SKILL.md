@@ -14,7 +14,7 @@ Use the `gh` command line tool for all GitHub issue operations. When creating is
 | List issues | `gh issue list` |
 | List open issues | `gh issue list --state open` |
 | View issue | `gh issue view <number>` |
-| Create issue | `gh issue create --title "..." --body "..." --label "ai"` |
+| Create issue | `gh issue create --title "..." --body "..." --label "Reporter: AI"` |
 | Edit issue | `gh issue edit <number> --title "..." --body "..."` |
 | Close issue | `gh issue close <number>` |
 
@@ -66,8 +66,9 @@ gh label create "Priority: High"      --color "e4181b" --description "High prior
 gh label create "Priority: Medium"    --color "fbca04" --description "Medium priority"
 gh label create "Priority: Low"       --color "c5def5" --description "Low priority"
 
-# Reporter label
+# Reporter / workflow labels
 gh label create "Reporter: AI"        --color "d4c5f9" --description "Created by AI agent"
+gh label create "Human"               --color "fbca04" --description "Requires human intervention"
 
 # Status labels
 gh label create "Status: Validated"   --color "99d708" --description "Validated and ready to plan/implement"
@@ -136,6 +137,7 @@ gh issue list --limit 20
 We use the following standardized labels:
 
 - `Reporter: AI` - Issues created by AI agents
+- `Human` - Issues that require human intervention (AI agents should skip these)
 
 - `Status: Validated` - Issues that have been validated and that are ready to be planned/implemented
 - `Status: Planning` - Issues that are being worked on in planning mode

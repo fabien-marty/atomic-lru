@@ -33,6 +33,7 @@ We use the following standardized labels.
 ### For issues only
 
 - `Reporter: AI` - Issues created by AI agents
+- `Human` - Issues that require human intervention (AI agents should skip these)
 
 - `Status: Validated` - Issues that have been validated and that are ready to be planned/implemented
 - `Status: Planning` - Issues that are being worked on in planning mode
