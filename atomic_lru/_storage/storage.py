@@ -245,8 +245,7 @@ class Storage(Generic[T]):
 
         Raises:
             RuntimeError: If the storage has been closed.
-            ValueError: If `size_limit_in_bytes` is set and `value` is not `bytes`,
-                or if the value is larger than half the size limit.
+            ValueError: If `size_limit_in_bytes` is set and `value` is not `bytes`.
 
         Note:
             Items larger than half the `size_limit_in_bytes` are rejected to prevent

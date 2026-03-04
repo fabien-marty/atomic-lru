@@ -191,12 +191,13 @@ class Cache(Storage[bytes]):
 
         Raises:
             RuntimeError: If the cache has been closed.
-            ValueError: If serialization fails, or if size limits are set and
-                the serialized value is too large.
+            ValueError: If serialization fails.
 
         Note:
             The value is serialized before size checks are performed, so the
-            serialized size is what counts toward size limits.
+            serialized size is what counts toward size limits. If the serialized
+            value exceeds half the `size_limit_in_bytes`, it is silently dropped
+            without being stored.
         """
         serialized_value = self._serialize(value)
         super().set(key=key, value=serialized_value, ttl=ttl)
