@@ -41,7 +41,7 @@ class ExpirationThread:
 
     Example:
         ```python
-        from atomic_lru._storage import ExpirationThread
+        from atomic_lru._storage.thread import ExpirationThread
         def clean_func(start, stop):
             # Check items from start to stop
             return (10, 2)  # tested 10, deleted 2
