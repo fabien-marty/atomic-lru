@@ -143,7 +143,7 @@ We use the following standardized labels:
 - `Status: Implementing` - Issues that are being implemented
 - `Status: Implemented` - Issues that have been implemented (in a pull-request or in a local branch)
 
-- `Type: Added` - Issues that are new features 
+- `Type: Added` - Issues that are new features
 - `Type: Changed` - Issues that are changes to existing features
 - `Type: Removed` - Issues that are removals of existing features
 - `Type: Fixed` - Issues that are bug fixes

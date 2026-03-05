@@ -12,7 +12,7 @@ Thoroughly review the ENTIRE codebase to identify bugs, improvements, architectu
 
 2. **Search existing github issues** to know what has already been reported. Avoid creating duplicate tasks.
 
-3. **Review the entire codebase systematically.** Read all source files, tests, configuration files, and documentation. 
+3. **Review the entire codebase systematically.** Read all source files, tests, configuration files, and documentation.
 
 4. **For each issue found**, create a GitHub issue with:
    - A clear, specific **title**
