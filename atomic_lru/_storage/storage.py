@@ -101,6 +101,12 @@ class Storage(Generic[T]):
         # Validate configuration before allocating any resources
         if self.size_limit_in_bytes is not None and self.size_limit_in_bytes < 4096:
             raise ValueError("size_limit_in_bytes must be at least 4096")
+        if self.max_items is not None and self.max_items < 1:
+            raise ValueError("max_items must be at least 1")
+        if self.default_ttl is not None and self.default_ttl < 0:
+            raise ValueError("default_ttl cannot be negative")
+        if self.expiration_thread_delay <= 0:
+            raise ValueError("expiration_thread_delay must be positive")
 
         self._size_in_bytes = sys.getsizeof(self._data)
         if not self.expiration_disabled:
