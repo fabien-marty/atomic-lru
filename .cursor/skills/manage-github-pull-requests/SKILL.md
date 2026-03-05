@@ -25,17 +25,15 @@ Use the `gh` command line tool for all GitHub pull request operations.
 When creating or editing PRs, use this template for the body:
 
 ```markdown
-## Summary
+## Description
 
-[1–3 bullet points describing what this PR does and why]
+[Describe the changes in 1–3 paragraphs. Reference linked issues with Fixes #123 or Closes #123.]
 
-## Changes
+## Checklist
 
-[Brief list of the key files / components changed and why]
-
-## Related issues
-
-Closes #<issue-number>   ← remove if no related issue
+- [ ] Tests pass (`make test`)
+- [ ] Linting passes (`make lint`)
+- [ ] Documentation generated (`make doc`)
 ```
 
 ## Creating PRs
@@ -44,35 +42,29 @@ Closes #<issue-number>   ← remove if no related issue
 
 ```bash
 gh pr create --title "Title here" --body-file - << 'EOF'
-## Summary
+## Description
 
-- Fix cache eviction bug when TTL expires
+Description text. Fixes #42.
 
-## Changes
+## Checklist
 
-- `atomic_lru/cache.py`: corrected eviction logic
-- `tests/test_cache.py`: added regression test
-
-## Related issues
-
-Closes #42
+- [ ] Tests pass (`make test`)
+- [ ] Linting passes (`make lint`)
+- [ ] Documentation generated (`make doc`)
 EOF
 ```
 
 **Inline body**:
 
 ```bash
-gh pr create --title "Title" --body "## Summary
+gh pr create --title "Title" --body "## Description
 
-- Short description of what this PR does
+Description text.
 
-## Changes
+## Checklist
 
-- List of key changes
-
-## Related issues
-
-Closes #42" --label "Type: Fixed"
+- [ ] Tests pass (\`make test\`)
+- [ ] Linting passes (\`make lint\`)" --label "Type: Fixed"
 ```
 
 **Autofill from commits**:
