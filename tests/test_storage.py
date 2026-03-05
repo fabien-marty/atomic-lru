@@ -414,6 +414,24 @@ def test_overwrite_existing_key_updates_lru_position_with_multiple_overwrites():
     storage.close()
 
 
+def test_storage_invalid_parameters():
+    """Test that invalid constructor parameters raise ValueError with clear messages."""
+    with pytest.raises(ValueError, match="max_items must be at least 1"):
+        Storage[bytes](max_items=0)
+
+    with pytest.raises(ValueError, match="max_items must be at least 1"):
+        Storage[bytes](max_items=-5)
+
+    with pytest.raises(ValueError, match="default_ttl cannot be negative"):
+        Storage[bytes](default_ttl=-1.0)
+
+    with pytest.raises(ValueError, match="expiration_thread_delay must be positive"):
+        Storage[bytes](expiration_thread_delay=0)
+
+    with pytest.raises(ValueError, match="expiration_thread_delay must be positive"):
+        Storage[bytes](expiration_thread_delay=-1.0)
+
+
 def test_overwrite_lru_item_size_tracking():
     """Size tracking stays correct when set() overwrites a key that gets evicted as the LRU item.
 

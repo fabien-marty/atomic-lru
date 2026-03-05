@@ -60,7 +60,7 @@ cache.close()
 
 ### Low level API *(without serialization/deserialization)*
 
-But you can use it at a lower level to store any kind of data type **without serialization**. In that case, you will loose the `max-size-in-bytes` feature but you still get the `max-items` feature.
+But you can use it at a lower level to store any kind of data type **without serialization**. In that case, you will lose the `max-size-in-bytes` feature but you still get the `max-items` feature.
 
 ```python
 from atomic_lru import CACHE_MISS, Storage
@@ -109,5 +109,5 @@ This library is managed with `uv` and a `Makefile`. Execute:
 
 See https://docs.astral.sh/uv/getting-started/installation/ to install `uv` if you need to.
 
-[^1]: This feature is only available when using the high level `Cache` API.
+[^1]: When using the low level `Storage` API, values must be of type `bytes` for size tracking to work. The high level `Cache` API handles this automatically.
 [^2]: By default, `pickle` is used for serialization/deserialization but you can provide your own serializer/deserializer if you want to use a different format.
