@@ -146,6 +146,7 @@ def test_storage_expiration_manual():
     checked, deleted = storage._clean_expired()
     assert checked == 81
     assert deleted == 80
+    storage.close()
 
 
 def test_storage_expiration_thread():
@@ -190,6 +191,7 @@ def test_storage_too_many_items():
         if i % 10 == 0:
             # These keys should be still in the storage (thanks to the LRU behavior)
             assert storage.get(f"key{i}") == f"v{i}".encode()
+    storage.close()
 
 
 def test_storage_various():
@@ -209,6 +211,7 @@ def test_storage_various():
 
     # Get an expired key should return CACHE_MISS
     assert storage.get("key1") is CACHE_MISS
+    storage.close()
 
 
 def test_storage_delete_return_value():
@@ -253,6 +256,7 @@ def test_max_size_limit():
     assert storage.number_of_items > 10
     assert storage.size_in_bytes > 3500
     assert storage.size_in_bytes < 4096
+    storage.close()
 
 
 def test_overwrite_existing_key_size_tracking():
