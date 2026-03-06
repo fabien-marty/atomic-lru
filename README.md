@@ -7,7 +7,7 @@ This is a **thread-safe** and **dependency-free** **in-memory** **LRU storage** 
 
 You can define:
 
-- **limits** (`max-items` or `max-size-in-bytes`)
+- **limits** (`max_items` or `size_limit_in_bytes`)
 - **TTL expiration** (globally or per item)
 
 to prevent the storage from growing too big.
@@ -60,7 +60,7 @@ cache.close()
 
 ### Low level API *(without serialization/deserialization)*
 
-But you can use it at a lower level to store any kind of data type **without serialization**. In that case, you will lose the `max-size-in-bytes` feature but you still get the `max-items` feature.
+But you can use it at a lower level to store any kind of data type **without serialization**. In that case, you will lose the `size_limit_in_bytes` feature but you still get the `max_items` feature.
 
 ```python
 from atomic_lru import CACHE_MISS, Storage

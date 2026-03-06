@@ -4,7 +4,7 @@ This is a **thread-safe** and **dependency-free** **in-memory** **LRU storage** 
 
 You can define:
 
-- **limits** (`max-items` or `max-size-in-bytes`)
+- **limits** (`max_items` or `size_limit_in_bytes`)
 - **TTL expiration** (globally or per item)
 
 to prevent the storage from growing too big.
