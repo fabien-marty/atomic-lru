@@ -36,6 +36,7 @@ def test_cache_basic():
     assert cache.get("none_key") is None
 
     assert cache.number_of_items == 8
+    cache.close()
 
 
 def test_cache_miss():
@@ -45,6 +46,7 @@ def test_cache_miss():
     cache.set("key1", "value1")
     assert cache.get("key1") == "value1"
     assert cache.get("key2") is CACHE_MISS
+    cache.close()
 
 
 def test_cache_overwrite():
@@ -55,6 +57,7 @@ def test_cache_overwrite():
     cache.set("key", "value2")
     assert cache.get("key") == "value2"
     assert cache.number_of_items == 1
+    cache.close()
 
 
 def test_cache_ttl():
@@ -87,6 +90,7 @@ def test_cache_ttl():
 
     time.sleep(0.2)
     assert cache.get("key4") is CACHE_MISS
+    cache.close()
 
 
 def test_cache_ttl_thread():
@@ -127,6 +131,7 @@ def test_cache_custom_serializer():
     # Should raise ValueError for non-string values
     with pytest.raises(ValueError, match="Failed to serialize"):
         cache.set("key2", 42)
+    cache.close()
 
 
 def test_cache_serialization_error():
@@ -137,6 +142,7 @@ def test_cache_serialization_error():
 
     with pytest.raises(ValueError, match="Failed to serialize value of type"):
         cache.set("key", "value")
+    cache.close()
 
 
 def test_cache_deserialization_error():
@@ -150,6 +156,7 @@ def test_cache_deserialization_error():
 
     with pytest.raises(ValueError, match="Failed to deserialize value"):
         cache.get("key")
+    cache.close()
 
 
 def test_cache_complex_objects():
@@ -173,6 +180,7 @@ def test_cache_complex_objects():
     }
     cache.set("complex", complex_obj)
     assert cache.get("complex") == complex_obj
+    cache.close()
 
 
 def test_cache_lru_behavior():
@@ -195,6 +203,7 @@ def test_cache_lru_behavior():
     assert cache.get("key2") is CACHE_MISS  # Should be evicted
     assert cache.get("key3") == "value3"  # Should still be there
     assert cache.get("key4") == "value4"  # Should be there
+    cache.close()
 
 
 def test_cache_lru_behavior_with_set_overwrite():
@@ -217,6 +226,7 @@ def test_cache_lru_behavior_with_set_overwrite():
     assert cache.get("key2") is CACHE_MISS  # Should be evicted
     assert cache.get("key3") == "value3"  # Should still be there
     assert cache.get("key4") == "value4"  # Should be there
+    cache.close()
 
 
 def test_cache_size_limit():
@@ -235,6 +245,7 @@ def test_cache_size_limit():
 
     # Large value should be rejected (exceeds size_limit_in_bytes / 2)
     assert cache.get("large") is CACHE_MISS
+    cache.close()
 
 
 def test_cache_delete():
@@ -255,6 +266,7 @@ def test_cache_delete():
     # Delete non-existent key should do nothing
     assert cache.delete("nonexistent") is False
     assert cache.number_of_items == 1
+    cache.close()
 
 
 def test_cache_clean_expired():
@@ -276,6 +288,7 @@ def test_cache_clean_expired():
     assert cache.number_of_items == 1
     assert cache.get("key1") is CACHE_MISS
     assert cache.get("key2") == "value2"
+    cache.close()
 
 
 def test_cache_close():
@@ -320,6 +333,7 @@ def test_cache_default_serializer_pickle():
     assert isinstance(retrieved, dict)
     retrieved_dict = cast(dict[str, Any], retrieved)
     assert retrieved_dict["level1"]["level2"]["level3"]["list"][3]["nested"] == "dict"
+    cache.close()
 
 
 def test_cache_multiple_operations():
@@ -344,6 +358,7 @@ def test_cache_multiple_operations():
     # Verify unchanged values
     for i in range(25, 50):
         assert cache.get(f"key{i}") == f"value{i}"
+    cache.close()
 
 
 def test_cache_empty_values():
@@ -363,6 +378,7 @@ def test_cache_empty_values():
 
     cache.set("false", False)
     assert cache.get("false") is False
+    cache.close()
 
 
 def test_cache_default_ttl_sentinel():
@@ -381,3 +397,4 @@ def test_cache_default_ttl_sentinel():
 
     time.sleep(0.2)
     assert cache.get("key2") == "value2"  # Should still be there
+    cache.close()
