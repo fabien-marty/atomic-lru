@@ -107,6 +107,10 @@ class Storage(Generic[T]):
             raise ValueError("default_ttl cannot be negative")
         if self.expiration_thread_delay <= 0:
             raise ValueError("expiration_thread_delay must be positive")
+        if self.expiration_thread_max_checks_per_iteration < 0:
+            raise ValueError(
+                "expiration_thread_max_checks_per_iteration cannot be negative"
+            )
 
         self._size_in_bytes = sys.getsizeof(self._data)
         if not self.expiration_disabled:
