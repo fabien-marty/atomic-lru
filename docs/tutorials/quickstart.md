@@ -14,7 +14,7 @@ The main use-case is to use it as a **cache** for your data. You store any kind 
 
 ## Low level API *(without serialization/deserialization)*
 
-But you can use it at a lower level to store any kind of data type **without serialization**. In that case, you will lose the `max-size-in-bytes` feature but you still get the `max-items` feature.
+But you can use it at a lower level to store any kind of data type **without serialization**. In that case, you will lose the `size_limit_in_bytes` feature but you still get the `max_items` feature.
 
 ```python
 {% include 'tutorials/lowlevel.py' %}
