@@ -116,7 +116,7 @@ class Cache(Storage[bytes]):
 
     Example:
         ```python
-        from atomic_lru import Cache
+        from atomic_lru import Cache, CACHE_MISS
         cache = Cache(max_items=100, default_ttl=3600)  # 1 hour TTL
         # Store any Python object
         cache.set("user:123", {"name": "Alice", "age": 30})
