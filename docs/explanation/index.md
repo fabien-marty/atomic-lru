@@ -55,10 +55,11 @@ When an item is accessed via `get()`, it's moved to the end of the `OrderedDict`
 self._data.move_to_end(key)
 ```
 
-When an item is stored via `set()`, it's added to the end (or moved to the end if it already exists):
+When an item is stored via `set()`, it's added to the end if new. For existing keys, an explicit `move_to_end()` call is required, since `OrderedDict.__setitem__` does **not** reorder existing keys:
 
 ```python
-self._data[key] = value_obj  # Adds to end if new, or updates existing
+self._data[key] = value_obj       # Adds to end if new, does NOT move if existing
+self._data.move_to_end(key)       # Explicitly moves existing key to end
 ```
 
 This ensures that frequently accessed items naturally migrate toward the end, while rarely accessed items accumulate at the beginning.
