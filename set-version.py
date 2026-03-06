@@ -5,7 +5,7 @@ version1_regex = re.compile(r"^version[\s]*=")
 version2_regex = re.compile(r"^VERSION[\s]*=")
 
 
-def update_version_in_file(file: str, version: str):
+def update_version_in_file(file: str, version: str) -> None:
     with open(file) as f:
         c = f.read()
 
@@ -23,7 +23,7 @@ def update_version_in_file(file: str, version: str):
         g.write("\n".join(lines) + trailing_newline)
 
 
-def update_version(version: str, files: list[str]):
+def update_version(version: str, files: list[str]) -> None:
     for file in files:
         update_version_in_file(file, version)
 
