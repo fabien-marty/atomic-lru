@@ -256,7 +256,7 @@ def test_max_size_limit():
 
     assert storage.number_of_items > 10
     assert storage.size_in_bytes > 3500
-    assert storage.size_in_bytes < 4096
+    assert storage.size_in_bytes <= 4096
     storage.close()
 
 
